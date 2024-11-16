@@ -72,34 +72,65 @@ st.plotly_chart(fig_country)
 # Tendance moyenne annuelle
 st.header("Tendance Moyenne Annuelle des Décès dus au PM2.5 et de l'Éco-Innovation")
 
-# Code temporaire pour vérifier les types et les premières lignes des données
-st.write("Types des colonnes :", data.dtypes)
-st.write("Exemple de données :", data.head())
-
-# Nettoyage de la colonne Année pour s'assurer qu'elle est bien en format entier
-data['Année'] = data['Année'].astype(str).str.replace(',', '').astype(int)
-
-# Filtrer pour n'utiliser que les colonnes numériques sans inclure "Année" dans la moyenne
-numeric_columns = [col for col in data.select_dtypes(include=['float64', 'int64']).columns if col != "Année"]
-st.write("Colonnes numériques pour le calcul de la moyenne :", numeric_columns)
-
 # Calcul de la tendance moyenne annuelle en utilisant uniquement les colonnes numériques
-avg_data = data.groupby("Année")[numeric_columns].mean()  # Ne pas utiliser reset_index() pour éviter le conflit de colonne
+avg_data = data.groupby("Année")[numeric_columns].mean()
 
-# Afficher les données de tendance moyenne annuelle pour vérification
-st.write("Données de tendance moyenne annuelle :", avg_data.head())
-
-# Création du graphique
+# Création du graphique avec deux axes y pour gérer les différentes échelles
 fig_avg = go.Figure()
-fig_avg.add_trace(go.Scatter(x=avg_data.index, y=avg_data["deces_pm25"], name="Décès PM2.5 (Moyenne)", mode="lines+markers", line=dict(color='blue')))
-fig_avg.add_trace(go.Scatter(x=avg_data.index, y=avg_data["eco_index"], name="Indice d'Éco-Innovation (Moyenne)", mode="lines+markers", line=dict(color='red')))
-fig_avg.update_layout(title="Tendance Moyenne Annuelle", yaxis_title="Valeurs Moyennes", xaxis_title="Année")
+
+# Ajouter les décès dus au PM2.5 sur l'axe y gauche
+fig_avg.add_trace(go.Scatter(
+    x=avg_data.index, 
+    y=avg_data["deces_pm25"], 
+    name="Décès PM2.5 (Moyenne)", 
+    mode="lines+markers", 
+    line=dict(color='blue'),
+    yaxis="y1"  # Utilise le premier axe y
+))
+
+# Ajouter l'indice d'éco-innovation sur l'axe y droit
+fig_avg.add_trace(go.Scatter(
+    x=avg_data.index, 
+    y=avg_data["eco_index"], 
+    name="Indice d'Éco-Innovation (Moyenne)", 
+    mode="lines+markers", 
+    line=dict(color='red'),
+    yaxis="y2"  # Utilise le second axe y
+))
+
+# Configuration de la mise en page pour les deux axes y
+fig_avg.update_layout(
+    title="Tendance Moyenne Annuelle",
+    xaxis=dict(title="Année"),
+    yaxis=dict(title="Décès PM2.5 (Moyenne)", titlefont=dict(color="blue")),
+    yaxis2=dict(title="Indice d'Éco-Innovation (Moyenne)", titlefont=dict(color="red"),
+                overlaying="y", side="right")  # Axe y2 sur la droite
+)
 st.plotly_chart(fig_avg)
 
 
-# Résultats de la régression linéaire
+# Résultats de la régression linéaire avec un tableau stylisé
 st.header("Résultats de la Régression Linéaire par Pays")
-st.table(regression_results)
+
+# Création du tableau avec Plotly
+fig_table = go.Figure(data=[go.Table(
+    header=dict(values=['Pays', 'Coefficient', 'Intercept', 'R_squared', 'p_value'],
+                fill_color='paleturquoise',
+                align='left', font=dict(size=12, color='black')),
+    cells=dict(values=[
+        regression_results['Pays'], 
+        regression_results['Coefficient'].round(3), 
+        regression_results['Intercept'].round(3), 
+        regression_results['R_squared'].round(3), 
+        regression_results['p_value'].round(3)
+    ],
+    fill_color='lavender',
+    align='left', font=dict(size=11, color='black'))
+)])
+
+fig_table.update_layout(title="Tableau des Résultats de Régression")
+st.plotly_chart(fig_table)
+
 
 # Liens vers les fichiers
 st.header("Téléchargements")
