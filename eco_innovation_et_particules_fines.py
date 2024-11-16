@@ -254,6 +254,10 @@ for country in merged_data_cleaned['Pays'].unique():
 # Conversion des résultats en DataFrame
 results_df = pd.DataFrame(results)
 
+# Sauvegarde des résultats de régression dans un fichier CSV
+results_df.to_csv("regression_results.csv", index=False)
+
+
 # Création du tableau interactif avec Plotly
 fig = go.Figure(data=[go.Table(
     header=dict(values=['Pays', 'Coefficient', 'Intercept', 'R_squared', 'p_value'],
