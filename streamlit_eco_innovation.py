@@ -38,8 +38,25 @@ st.plotly_chart(fig_map)
 
 # Graphique de corrélation
 st.header("Corrélation entre l'Indice d'Éco-Innovation et les Décès dus au PM2.5")
-corr_data = data.groupby("Pays").corr().reset_index()  # Remplacez avec les données de corrélation, si vous avez une source spécifique
-fig_corr = px.bar(corr_data, x="Pays", y="correlation_coefficient", title="Corrélation par Pays")
+# Calcul des corrélations par pays
+correlation_results = []
+for country in data['Pays'].unique():
+    country_data = data[data['Pays'] == country]
+    correlation = country_data['eco_index'].corr(country_data['deces_pm25'])
+    correlation_results.append({'Pays': country, 'correlation_coefficient': correlation})
+
+# Conversion en DataFrame
+corr_data = pd.DataFrame(correlation_results)
+
+# Création du graphique de corrélation avec Plotly
+fig_corr = px.bar(
+    corr_data, 
+    x="Pays", 
+    y="correlation_coefficient", 
+    title="Corrélation entre l'Indice d'Éco-Innovation et les Décès dus au PM2.5 par Pays",
+    labels={'correlation_coefficient': 'Coefficient de Corrélation'},
+    hover_data={'correlation_coefficient': ':.2f'}  # Format pour afficher deux décimales dans l'infobulle
+)
 st.plotly_chart(fig_corr)
 
 # Comparaison annuelle par pays
@@ -76,4 +93,3 @@ st.markdown("""
 Les résultats montrent que l'éco-innovation semble avoir un effet significatif dans certains pays, et cette étude pourrait servir de base pour de futures recherches intégrant des facteurs additionnels, 
 tels que des données économiques, des taux de croissance démographique, ou des informations sur les politiques environnementales.
 """)
-
