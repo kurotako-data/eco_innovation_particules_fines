@@ -59,54 +59,46 @@ fig_corr = px.bar(
 )
 st.plotly_chart(fig_corr)
 
-# Comparaison annuelle par pays
+# Comparaison annuelle par pays avec deux axes y
 st.header("Comparaison de l'Évolution par Pays")
 country = st.selectbox("Sélectionner un pays", data["Pays"].unique())
 country_data = data[data["Pays"] == country]
+
+# Création de la figure avec deux axes y
 fig_country = go.Figure()
-fig_country.add_trace(go.Scatter(x=country_data["Année"], y=country_data["deces_pm25"], name="Décès PM2.5", mode="lines+markers"))
-fig_country.add_trace(go.Scatter(x=country_data["Année"], y=country_data["eco_index"], name="Indice d'Éco-Innovation", mode="lines+markers"))
-fig_country.update_layout(title=f"Évolution des Décès et Éco-Innovation pour {country}", yaxis_title="Valeurs", xaxis_title="Année")
-st.plotly_chart(fig_country)
-
-# Tendance moyenne annuelle
-st.header("Tendance Moyenne Annuelle des Décès dus au PM2.5 et de l'Éco-Innovation")
-
-# Calcul de la tendance moyenne annuelle en utilisant uniquement les colonnes numériques
-avg_data = data.groupby("Année")[numeric_columns].mean()
-
-# Création du graphique avec deux axes y pour gérer les différentes échelles
-fig_avg = go.Figure()
 
 # Ajouter les décès dus au PM2.5 sur l'axe y gauche
-fig_avg.add_trace(go.Scatter(
-    x=avg_data.index, 
-    y=avg_data["deces_pm25"], 
-    name="Décès PM2.5 (Moyenne)", 
+fig_country.add_trace(go.Scatter(
+    x=country_data["Année"], 
+    y=country_data["deces_pm25"], 
+    name="Décès PM2.5", 
     mode="lines+markers", 
     line=dict(color='blue'),
     yaxis="y1"  # Utilise le premier axe y
 ))
 
 # Ajouter l'indice d'éco-innovation sur l'axe y droit
-fig_avg.add_trace(go.Scatter(
-    x=avg_data.index, 
-    y=avg_data["eco_index"], 
-    name="Indice d'Éco-Innovation (Moyenne)", 
+fig_country.add_trace(go.Scatter(
+    x=country_data["Année"], 
+    y=country_data["eco_index"], 
+    name="Indice d'Éco-Innovation", 
     mode="lines+markers", 
     line=dict(color='red'),
     yaxis="y2"  # Utilise le second axe y
 ))
 
 # Configuration de la mise en page pour les deux axes y
-fig_avg.update_layout(
-    title="Tendance Moyenne Annuelle",
+fig_country.update_layout(
+    title=f"Évolution des Décès et Éco-Innovation pour {country}",
     xaxis=dict(title="Année"),
-    yaxis=dict(title="Décès PM2.5 (Moyenne)", titlefont=dict(color="blue")),
-    yaxis2=dict(title="Indice d'Éco-Innovation (Moyenne)", titlefont=dict(color="red"),
+    yaxis=dict(title="Décès PM2.5", titlefont=dict(color="blue")),
+    yaxis2=dict(title="Indice d'Éco-Innovation", titlefont=dict(color="red"),
                 overlaying="y", side="right")  # Axe y2 sur la droite
 )
-st.plotly_chart(fig_avg)
+
+# Affichage du graphique
+st.plotly_chart(fig_country)
+
 
 
 # Résultats de la régression linéaire avec un tableau stylisé
