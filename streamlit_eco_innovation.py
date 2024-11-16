@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 @st.cache_data
 def load_data():
     data = pd.read_csv('data/merged_data_cleaned.csv', sep=';')
-    regression_results = pd.read_csv("regression_results.csv", sep=';')  
+    regression_results = pd.read_csv("regression_results.csv", sep=',')  
     return data, regression_results
 
 data, regression_results = load_data()
