@@ -79,23 +79,22 @@ st.write("Exemple de données :", data.head())
 # Nettoyage de la colonne Année pour s'assurer qu'elle est bien en format entier
 data['Année'] = data['Année'].astype(str).str.replace(',', '').astype(int)
 
-# Filtrer pour n'utiliser que les colonnes numériques
-numeric_columns = data.select_dtypes(include=['float64', 'int64']).columns.tolist()
+# Filtrer pour n'utiliser que les colonnes numériques sans inclure "Année" dans la moyenne
+numeric_columns = [col for col in data.select_dtypes(include=['float64', 'int64']).columns if col != "Année"]
 st.write("Colonnes numériques pour le calcul de la moyenne :", numeric_columns)
 
-# Calcul de la tendance moyenne annuelle en ne sélectionnant que les colonnes numériques
-avg_data = data.groupby("Année")[numeric_columns].mean().reset_index()
+# Calcul de la tendance moyenne annuelle en utilisant uniquement les colonnes numériques
+avg_data = data.groupby("Année")[numeric_columns].mean()  # Ne pas utiliser reset_index() pour éviter le conflit de colonne
 
-# Vérification du DataFrame des moyennes
+# Afficher les données de tendance moyenne annuelle pour vérification
 st.write("Données de tendance moyenne annuelle :", avg_data.head())
 
 # Création du graphique
 fig_avg = go.Figure()
-fig_avg.add_trace(go.Scatter(x=avg_data["Année"], y=avg_data["deces_pm25"], name="Décès PM2.5 (Moyenne)", mode="lines+markers", line=dict(color='blue')))
-fig_avg.add_trace(go.Scatter(x=avg_data["Année"], y=avg_data["eco_index"], name="Indice d'Éco-Innovation (Moyenne)", mode="lines+markers", line=dict(color='red')))
+fig_avg.add_trace(go.Scatter(x=avg_data.index, y=avg_data["deces_pm25"], name="Décès PM2.5 (Moyenne)", mode="lines+markers", line=dict(color='blue')))
+fig_avg.add_trace(go.Scatter(x=avg_data.index, y=avg_data["eco_index"], name="Indice d'Éco-Innovation (Moyenne)", mode="lines+markers", line=dict(color='red')))
 fig_avg.update_layout(title="Tendance Moyenne Annuelle", yaxis_title="Valeurs Moyennes", xaxis_title="Année")
 st.plotly_chart(fig_avg)
-
 
 
 # Résultats de la régression linéaire
