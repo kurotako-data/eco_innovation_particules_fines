@@ -143,25 +143,28 @@ fig_eco_index.show()
 
 # In[7]:
 
-
 # Corrélation globale
 global_correlation = merged_data[['deces_pm25', 'eco_index']].corr().iloc[0, 1]
 print("Corrélation globale entre l'indice d'éco-innovation et les décès dus au PM2.5 :", global_correlation)
 
+# Calcul des corrélations par pays
+correlation_results = []
+for country in merged_data['Pays'].unique():
+    country_data = merged_data[merged_data['Pays'] == country]
+    correlation = country_data['eco_index'].corr(country_data['deces_pm25'])
+    correlation_results.append({'Pays': country, 'correlation_coefficient': correlation})
 
-
-# Calcul des corrélations par pays (déjà effectué dans votre code)
-country_correlations = merged_data.groupby('Pays')[['deces_pm25', 'eco_index']].corr().iloc[0::2, -1].reset_index()
-country_correlations.columns = ['Pays', 'index', 'correlation_eco_deces']
+# Conversion en DataFrame
+corr_data = pd.DataFrame(correlation_results)
 
 # Création du graphique interactif avec Plotly
 fig_corr = px.bar(
-    country_correlations, 
-    x='Pays', 
-    y='correlation_eco_deces', 
+    corr_data, 
+    x="Pays", 
+    y="correlation_coefficient", 
     title="Corrélation entre l'Indice d'Éco-Innovation et les Décès dus au PM2.5 par Pays",
-    labels={'correlation_eco_deces': 'Coefficient de Corrélation'},
-    hover_data={'correlation_eco_deces': ':.2f'}  # Format pour afficher deux décimales dans l'infobulle
+    labels={'correlation_coefficient': 'Coefficient de Corrélation'},
+    hover_data={'correlation_coefficient': ':.2f'}  # Format pour afficher deux décimales dans l'infobulle
 )
 
 # Personnalisation du graphique
