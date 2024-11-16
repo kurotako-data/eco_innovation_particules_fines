@@ -104,24 +104,37 @@ st.plotly_chart(fig_country)
 # Résultats de la régression linéaire avec un tableau stylisé
 st.header("Résultats de la Régression Linéaire par Pays")
 
-# Création du tableau avec Plotly
-fig_table = go.Figure(data=[go.Table(
-    header=dict(values=['Pays', 'Coefficient', 'Intercept', 'R_squared', 'p_value'],
-                fill_color='paleturquoise',
-                align='left', font=dict(size=12, color='black')),
-    cells=dict(values=[
-        regression_results['Pays'], 
-        regression_results['Coefficient'].round(3), 
-        regression_results['Intercept'].round(3), 
-        regression_results['R_squared'].round(3), 
-        regression_results['p_value'].round(3)
-    ],
-    fill_color='lavender',
-    align='left', font=dict(size=11, color='black'))
-)])
+# Étape 1 : Vérification des noms de colonnes dans regression_results
+st.write("Noms des colonnes dans regression_results avec symboles :")
+for col in regression_results.columns:
+    st.write(f"'{col}'")  # Affiche le nom exact de chaque colonne entouré d'apostrophes pour détection
 
-fig_table.update_layout(title="Tableau des Résultats de Régression")
-st.plotly_chart(fig_table)
+# Vérification de la colonne 'Pays' et nettoyage des noms de colonnes si nécessaire
+if 'Pays' not in regression_results.columns:
+    regression_results.columns = regression_results.columns.str.strip()  # Supprime les espaces invisibles
+    st.write("Colonnes après nettoyage :", regression_results.columns)
+
+# Création du tableau avec Plotly (si la colonne 'Pays' est bien reconnue)
+if 'Pays' in regression_results.columns:
+    fig_table = go.Figure(data=[go.Table(
+        header=dict(values=['Pays', 'Coefficient', 'Intercept', 'R_squared', 'p_value'],
+                    fill_color='paleturquoise',
+                    align='left', font=dict(size=12, color='black')),
+        cells=dict(values=[
+            regression_results['Pays'], 
+            regression_results['Coefficient'].round(3), 
+            regression_results['Intercept'].round(3), 
+            regression_results['R_squared'].round(3), 
+            regression_results['p_value'].round(3)
+        ],
+        fill_color='lavender',
+        align='left', font=dict(size=11, color='black'))
+    )])
+
+    fig_table.update_layout(title="Tableau des Résultats de Régression")
+    st.plotly_chart(fig_table)
+else:
+    st.write("Erreur : La colonne 'Pays' n'est toujours pas reconnue.")
 
 
 # Liens vers les fichiers
