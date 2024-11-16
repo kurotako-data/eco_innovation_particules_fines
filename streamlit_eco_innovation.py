@@ -9,8 +9,8 @@ import plotly.graph_objects as go
 # Chargement des données
 @st.cache
 def load_data():
-    data = pd.read_csv('merged_data_cleaned.csv')
-    regression_results = pd.read_csv("regression_results.csv")
+    data = pd.read_csv('data/merged_data_cleaned.csv')  # Chemin corrigé pour le fichier fusionné nettoyé
+    regression_results = pd.read_csv("regression_results.csv")  # Fichier à la racine
     return data, regression_results
 
 data, regression_results = load_data()
@@ -76,3 +76,4 @@ st.markdown("""
 Les résultats montrent que l'éco-innovation semble avoir un effet significatif dans certains pays, et cette étude pourrait servir de base pour de futures recherches intégrant des facteurs additionnels, 
 tels que des données économiques, des taux de croissance démographique, ou des informations sur les politiques environnementales.
 """)
+
