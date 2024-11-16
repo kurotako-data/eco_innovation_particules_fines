@@ -76,6 +76,9 @@ st.header("Tendance Moyenne Annuelle des Décès dus au PM2.5 et de l'Éco-Innov
 st.write("Types des colonnes :", data.dtypes)
 st.write("Exemple de données :", data.head())
 
+# Nettoyage de la colonne Année pour enlever les virgules et s'assurer qu'elle est bien en format entier
+data['Année'] = data['Année'].astype(str).str.replace(',', '').astype(int)
+
 # Calcul de la tendance moyenne annuelle
 avg_data = data.groupby("Année").mean().reset_index()
 fig_avg = go.Figure()
@@ -83,6 +86,7 @@ fig_avg.add_trace(go.Scatter(x=avg_data["Année"], y=avg_data["deces_pm25"], nam
 fig_avg.add_trace(go.Scatter(x=avg_data["Année"], y=avg_data["eco_index"], name="Indice d'Éco-Innovation (Moyenne)", mode="lines+markers", line=dict(color='red')))
 fig_avg.update_layout(title="Tendance Moyenne Annuelle", yaxis_title="Valeurs Moyennes", xaxis_title="Année")
 st.plotly_chart(fig_avg)
+
 
 
 # Résultats de la régression linéaire
