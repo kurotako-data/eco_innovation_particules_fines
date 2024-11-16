@@ -104,15 +104,6 @@ st.plotly_chart(fig_country)
 # Résultats de la régression linéaire avec un tableau stylisé
 st.header("Résultats de la Régression Linéaire par Pays")
 
-# Étape 1 : Vérification des noms de colonnes dans regression_results
-st.write("Noms des colonnes dans regression_results avec symboles :")
-for col in regression_results.columns:
-    st.write(f"'{col}'")  # Affiche le nom exact de chaque colonne entouré d'apostrophes pour détection
-
-# Vérification de la colonne 'Pays' et nettoyage des noms de colonnes si nécessaire
-if 'Pays' not in regression_results.columns:
-    regression_results.columns = regression_results.columns.str.strip()  # Supprime les espaces invisibles
-    st.write("Colonnes après nettoyage :", regression_results.columns)
 
 # Création du tableau avec Plotly (si la colonne 'Pays' est bien reconnue)
 if 'Pays' in regression_results.columns:
